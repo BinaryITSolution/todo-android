@@ -2,6 +2,7 @@ package com.dewan.todoapp.viewmodel.home
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -10,6 +11,7 @@ import com.dewan.todoapp.model.local.AppPreferences
 import com.dewan.todoapp.model.remote.Networking
 import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 import com.dewan.todoapp.model.repository.TaskRepository
+import retrofit2.HttpException
 
 class HomeViewModel : ViewModel() {
 
@@ -34,14 +36,25 @@ class HomeViewModel : ViewModel() {
     }
 
     fun getAllTask() = liveData {
-        progress.postValue(true)
-        val data = taskRepository.getAllTask(token)
-        if (data.code() == 200){
-            taskList.postValue(data.body())
-        }
-        emit(data)
+        try {
+            progress.postValue(true)
+            val data = taskRepository.getAllTask(token)
+            if (data.code() == 200){
+                taskList.postValue(data.body())
+            }
+            emit(data)
 
-        progress.postValue(false)
+            progress.postValue(false)
+
+        }
+        catch (httpException: HttpException){
+            Log.e(TAG,httpException.toString())
+
+        }
+        catch (exception: Exception){
+            Log.e(TAG,exception.toString())
+        }
+
     }
 
 }

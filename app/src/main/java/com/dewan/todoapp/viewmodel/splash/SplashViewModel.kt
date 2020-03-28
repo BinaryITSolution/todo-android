@@ -2,6 +2,7 @@ package com.dewan.todoapp.viewmodel.splash
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -9,6 +10,7 @@ import com.dewan.todoapp.BuildConfig
 import com.dewan.todoapp.model.local.AppPreferences
 import com.dewan.todoapp.model.remote.Networking
 import com.dewan.todoapp.model.repository.ValidateTokenRepository
+import retrofit2.HttpException
 
 class SplashViewModel: ViewModel() {
 
@@ -30,8 +32,19 @@ class SplashViewModel: ViewModel() {
     }
 
     fun validateToken() = liveData {
+        try {
+            val data = validateTokenRepository.validateToken(token.value.toString())
+            emit(data)
 
-        val data = validateTokenRepository.validateToken(token.value.toString())
-        emit(data)
+        }
+        catch (httpException: HttpException){
+            Log.e(TAG,httpException.toString())
+
+        }
+        catch (exception: Exception){
+            Log.e(TAG,exception.toString())
+        }
+
+
     }
 }
