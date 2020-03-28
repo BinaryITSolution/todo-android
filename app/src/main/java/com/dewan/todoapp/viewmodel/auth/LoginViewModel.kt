@@ -2,6 +2,7 @@ package com.dewan.todoapp.viewmodel.auth
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.dewan.todoapp.BuildConfig
@@ -11,6 +12,7 @@ import com.dewan.todoapp.model.remote.request.auth.LoginRequest
 import com.dewan.todoapp.model.remote.response.auth.LoginResponse
 import com.dewan.todoapp.model.repository.LoginRepository
 import kotlinx.coroutines.Dispatchers.IO
+import retrofit2.HttpException
 
 
 class LoginViewModel: ViewModel() {
@@ -32,9 +34,19 @@ class LoginViewModel: ViewModel() {
     }
 
     fun login(loginRequest: LoginRequest) = liveData(IO) {
+        try {
+            val data = loginRepository.login(loginRequest)
+            emit(data)
 
-        val data = loginRepository.login(loginRequest)
-        emit(data)
+        }
+        catch (httpException: HttpException){
+            Log.e(TAG,httpException.toString())
+
+        }
+        catch (exception: Exception){
+            Log.e(TAG,exception.toString())
+        }
+
     }
 
     fun saveUserDetail(loginResponse: LoginResponse) = liveData(IO) {
