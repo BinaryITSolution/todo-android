@@ -37,7 +37,6 @@ class SplashActivity : AppCompatActivity() {
 
         //view model
         viewModel = ViewModelProvider(this).get(SplashViewModel::class.java)
-        viewModel.init(this)
 
 
         CoroutineScope(Dispatchers.IO).launch {

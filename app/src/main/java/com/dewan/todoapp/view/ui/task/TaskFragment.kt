@@ -19,7 +19,6 @@ import org.jetbrains.anko.support.v4.alert
 class TaskFragment : Fragment() {
 
     companion object {
-        fun newInstance() = TaskFragment()
         const val TAG = "TaskFragment"
     }
 
@@ -47,8 +46,7 @@ class TaskFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
-        viewModel.init(activity?.applicationContext!!)
-        viewModel.user_id.observe(viewLifecycleOwner, Observer {
+        viewModel.userId.observe(viewLifecycleOwner, Observer {
             userId = it
         })
 
@@ -69,41 +67,15 @@ class TaskFragment : Fragment() {
     private fun addTask(addTaskRequest: AddTaskRequest){
 
         viewModel.addTask(addTaskRequest).observe(viewLifecycleOwner, Observer {
-
-            if (it.code() == 201){
-                val data = it.body()
-
-                alert {
-                    title = getString(R.string.title_success_dialog)
-                    message = getString(R.string.msg_add_post_success)
-                    isCancelable = false
-                    positiveButton(getString(R.string.btn_ok)){dialog->
-                        //clear the edit text
-                        txt_title.text?.clear()
-                        txt_body.text?.clear()
-
-                        dialog.dismiss()
-                    }
-                }.show()
-
-                Log.e(TAG," ${data?.title.toString()} ${data?.body.toString()}")
+            if (it!!){
+                successDialog()
             }
             else {
-
-                val errorMsg = "error code: ${it.code()} error message: ${it.errorBody()}"
-
-                alert {
-                    title = getString(R.string.title_error_dialog)
-                    message = errorMsg
-                    isCancelable = false
-                    positiveButton(getString(R.string.btn_ok)){dialog->
-                        dialog.dismiss()
-                    }
-                }.show()
-
-                Log.e(TAG,"error code: ${it.code()} error message: ${it.errorBody()}")
+                unSuccessFulDialog()
             }
         })
+
+
     }
 
     private fun observeProgressBar(view: View){
@@ -116,6 +88,48 @@ class TaskFragment : Fragment() {
                 view.progressBar.visibility = View.GONE
             }
         })
+
+        viewModel.isError.observe(viewLifecycleOwner, Observer {
+            errorDialog(it)
+        })
+    }
+
+    private fun successDialog(){
+        alert {
+            title = getString(R.string.title_success_dialog)
+            message = getString(R.string.msg_add_post_success)
+            isCancelable = false
+            positiveButton(getString(R.string.btn_ok)){dialog->
+                //clear the edit text
+                txt_title.text?.clear()
+                txt_body.text?.clear()
+
+                dialog.dismiss()
+            }
+        }.show()
+    }
+
+    private fun unSuccessFulDialog(){
+        alert {
+            title = getString(R.string.title_un_successful_dialog)
+            message = getString(R.string.msg_add_post_un_successful)
+            isCancelable = false
+            positiveButton(getString(R.string.btn_ok)){dialog->
+                dialog.dismiss()
+            }
+        }.show()
+    }
+
+    private fun errorDialog(errorMsg: String){
+        alert {
+            title = getString(R.string.title_error_dialog)
+            message = errorMsg
+            isCancelable = false
+            positiveButton(getString(R.string.btn_ok)){dialog->
+                dialog.dismiss()
+            }
+        }.show()
+
     }
 
 
