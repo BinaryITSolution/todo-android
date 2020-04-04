@@ -22,12 +22,12 @@ import com.dewan.todoapp.view.adaptor.TaskCallBack
 import com.dewan.todoapp.view.ui.auth.LoginActivity
 import com.dewan.todoapp.viewmodel.home.HomeViewModel
 import kotlinx.android.synthetic.main.home_fragment.*
+import org.jetbrains.anko.support.v4.alert
 
 class HomeFragment : Fragment(), TaskCallBack {
 
     companion object {
         const val TAG = "HomeFragment"
-        fun newInstance() = HomeFragment()
     }
 
     private lateinit var viewModel: HomeViewModel
@@ -54,35 +54,19 @@ class HomeFragment : Fragment(), TaskCallBack {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        viewModel.init(context!!)
 
-        viewModel.progress.observe(viewLifecycleOwner, Observer {
-            pb_home.visibility = if (it) View.VISIBLE else View.GONE
-        })
-
+        observer()
         //get all task
         getAllTask()
     }
 
     private fun getAllTask(){
         viewModel.getAllTask().observe(viewLifecycleOwner, Observer {
-            if (it.code() == 200){
-
-                //clear data for our task list
-                taskList.clear()
-                //add data to our task list
-                taskList = it.body()!!.toCollection(taskList)
-                setRecycleView()
-
-                /*for (task in taskList){
-                    Log.e(TAG,"Title: ${task.title} Body: ${it.body()}")
-                }*/
-
-            }
-            else {
-                Log.e(TAG,"error code: ${it.code()} error message: ${it.errorBody()}")
-
-            }
+            //clear data for our task list
+            taskList.clear()
+            //add data to our task list
+            taskList = it!!.toCollection(taskList)
+            setRecycleView()
         })
     }
 
@@ -111,6 +95,28 @@ class HomeFragment : Fragment(), TaskCallBack {
             ))
             Log.e(TAG,"Position: $position is a single click")
         }
+    }
+
+    private fun observer(){
+        viewModel.isError.observe(viewLifecycleOwner, Observer {
+            errorDialog(it)
+        })
+
+        viewModel.progress.observe(viewLifecycleOwner, Observer {
+            pb_home.visibility = if (it) View.VISIBLE else View.GONE
+        })
+    }
+
+    private fun errorDialog(errorMsg: String){
+        alert {
+            title = getString(R.string.title_error_dialog)
+            message = errorMsg
+            isCancelable = false
+            positiveButton(getString(R.string.btn_ok)){dialog->
+                dialog.dismiss()
+            }
+        }.show()
+
     }
 
 
