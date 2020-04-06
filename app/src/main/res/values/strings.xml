@@ -39,9 +39,11 @@
     <string name="btn_ok">OK</string>
     <string name="title_success_dialog">Success!</string>
     <string name="title_un_successful_dialog">UnSuccessful!</string>
+    <string name="title_successful_signup">Great!</string>
     <string name="title_error_dialog">Error!</string>
     <string name="msg_add_post_success">Task added successfully.</string>
     <string name="msg_add_post_un_successful">Sorry! Something went wrong. Please try again.</string>
+    <string name="msg_signup_successful">Hurry! you have created a new account. Please login</string>
     <string name="alert_error_title">Ouch!</string>
     <string name="alert_error_msg">There was a error please try again.</string>
     <string name="alert_success_title">Great!</string>

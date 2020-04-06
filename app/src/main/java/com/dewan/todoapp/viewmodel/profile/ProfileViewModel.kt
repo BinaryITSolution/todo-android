@@ -22,11 +22,11 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private val networkService = Networking.create(BuildConfig.BASE_URL)
-    private lateinit var userProfileRepository: UserProfileRepository
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var appPreferences: AppPreferences
-    private lateinit var token: String
-    private lateinit var userId: String
+    private var userProfileRepository: UserProfileRepository
+    private var sharedPreferences = application.getSharedPreferences("com.dewan.todoapp.pref", Context.MODE_PRIVATE)
+    private var appPreferences: AppPreferences
+    private var token: String
+    private var userId: String
     val loading: MutableLiveData<Boolean> = MutableLiveData()
     lateinit var profile: UserProfileResponse
     val imageUrl: MutableLiveData<String> = MutableLiveData()
@@ -34,7 +34,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         userProfileRepository = UserProfileRepository(networkService)
-        sharedPreferences = application.getSharedPreferences("com.dewan.todoapp.pref", Context.MODE_PRIVATE)
         appPreferences = AppPreferences(sharedPreferences)
         token = appPreferences.getAccessToken().toString()
         userId = appPreferences.getUserId().toString()

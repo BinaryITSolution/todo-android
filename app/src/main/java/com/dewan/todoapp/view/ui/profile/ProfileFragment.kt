@@ -1,8 +1,7 @@
 package com.dewan.todoapp.view.ui.profile
 
-import androidx.lifecycle.ViewModelProviders
+
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -18,7 +17,6 @@ class ProfileFragment : Fragment() {
 
     companion object {
         const val TAG = "ProfileFragment"
-        fun newInstance() = ProfileFragment()
     }
 
     private lateinit var viewModel: ProfileViewModel
