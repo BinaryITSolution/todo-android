@@ -17,27 +17,31 @@ class TaskDetailViewModel(application: Application) : AndroidViewModel(applicati
         const val TAG = "TaskDetailViewModel"
     }
 
+
     private var sharesPreferences = application.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
     private lateinit var appPreferences: AppPreferences
     private lateinit var user_id: String
+
 
     val id: MutableLiveData<String> = MutableLiveData()
     val dataTime: MutableLiveData<String> = MutableLiveData()
     val title: MutableLiveData<String> = MutableLiveData()
     val body : MutableLiveData<String> = MutableLiveData()
     val status : MutableLiveData<String> = MutableLiveData()
-    val userId : MutableLiveData<String> = MutableLiveData()
+    val userIdField : MutableLiveData<String> = MutableLiveData()
     val bgColor : MutableLiveData<String> = MutableLiveData()
     val isEditable: MutableLiveData<Boolean> = MutableLiveData()
+
 
     init{
         appPreferences = AppPreferences(sharesPreferences)
         user_id = appPreferences.getUserId().toString()
-    }
+
+
 
     fun checkUserId(){
         try {
-            isEditable.value = userId.value == user_id
+            isEditable.value = userIdField.value == userId
         }
         catch (httpException: HttpException){
             Log.e(TAG,httpException.toString())
