@@ -26,7 +26,7 @@ class SplashViewModel: ViewModel() {
 
 
     fun init(context: Context){
-        sharedPreferences = context.getSharedPreferences("com.dewan.todoapp.pref", Context.MODE_PRIVATE)
+        sharedPreferences = context.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
         appPreferences = AppPreferences(sharedPreferences)
         token.value = appPreferences.getAccessToken()
     }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.dewan.todoapp.BuildConfig
 import com.dewan.todoapp.model.local.AppPreferences
 import retrofit2.HttpException
 
@@ -29,7 +30,7 @@ class TaskDetailViewModel : ViewModel() {
 
     fun init(context: Context){
 
-        sharesPreferences = context.getSharedPreferences("com.dewan.todoapp.pref", Context.MODE_PRIVATE)
+        sharesPreferences = context.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
         appPreferences = AppPreferences(sharesPreferences)
         user_id = appPreferences.getUserId().toString()
 

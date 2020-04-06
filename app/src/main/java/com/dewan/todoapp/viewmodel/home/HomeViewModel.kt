@@ -23,7 +23,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val networkService = Networking.create(BuildConfig.BASE_URL)
     private var taskRepository: TaskRepository
-    private var sharesPreferences = application.getSharedPreferences("com.dewan.todoapp.pref",Context.MODE_PRIVATE)
+    private var sharesPreferences = application.getSharedPreferences(BuildConfig.PREF_NAME,Context.MODE_PRIVATE)
     private var appPreferences: AppPreferences
     private var token: String
     val taskList: MutableLiveData<List<TaskResponse>> = MutableLiveData()
