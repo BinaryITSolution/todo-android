@@ -2,34 +2,26 @@ package com.dewan.todoapp.view.ui.profile.edit
 
 import android.app.Activity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-
 import com.dewan.todoapp.R
-import com.dewan.todoapp.view.ui.task.edit.EditTaskFragmentDirections
 import com.dewan.todoapp.viewmodel.profile.edit.EditProfileViewModel
 import com.github.dhaval2404.imagepicker.ImagePicker
 import kotlinx.android.synthetic.main.edit_profile_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.support.v4.alert
 import java.io.File
 
 class EditProfileFragment : Fragment() {
 
     companion object {
-        fun newInstance() = EditProfileFragment()
+        const val TAG = "EditProfileFragment"
     }
 
     private lateinit var viewModel: EditProfileViewModel
@@ -37,9 +29,7 @@ class EditProfileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.edit_profile_fragment, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.edit_profile_fragment, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
