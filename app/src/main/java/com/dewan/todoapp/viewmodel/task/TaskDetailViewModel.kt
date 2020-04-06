@@ -1,21 +1,23 @@
 package com.dewan.todoapp.viewmodel.task
 
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dewan.todoapp.BuildConfig
 import com.dewan.todoapp.model.local.AppPreferences
 import retrofit2.HttpException
 
-class TaskDetailViewModel : ViewModel() {
+class TaskDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     companion object {
         const val TAG = "TaskDetailViewModel"
     }
 
-    private lateinit var sharesPreferences: SharedPreferences
+    private var sharesPreferences = application.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
     private lateinit var appPreferences: AppPreferences
     private lateinit var user_id: String
 
@@ -28,12 +30,9 @@ class TaskDetailViewModel : ViewModel() {
     val bgColor : MutableLiveData<String> = MutableLiveData()
     val isEditable: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun init(context: Context){
-
-        sharesPreferences = context.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
+    init{
         appPreferences = AppPreferences(sharesPreferences)
         user_id = appPreferences.getUserId().toString()
-
     }
 
     fun checkUserId(){

@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.task_detail_fragment.*
 class TaskDetailFragment : Fragment() {
 
     companion object {
-        fun newInstance() = TaskDetailFragment()
+        const val TAG = "TaskDetailFragment"
     }
 
     private lateinit var viewModel: TaskDetailViewModel
@@ -31,7 +31,7 @@ class TaskDetailFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(TaskDetailViewModel::class.java)
-        viewModel.init(context!!)
+
 
         val args = TaskDetailFragmentArgs.fromBundle(arguments!!)
         viewModel.dataTime.value = args.datTime
