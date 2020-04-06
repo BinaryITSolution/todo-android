@@ -29,7 +29,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     private val networkService = Networking.create(BuildConfig.BASE_URL)
     private var userProfileRepository: UserProfileRepository
     private var  sharedPreferences =
-        application.getSharedPreferences("com.dewan.todoapp.pref", Context.MODE_PRIVATE)
+        application.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
     private var appPreferences: AppPreferences
     private var token: String
     private var userId: String
