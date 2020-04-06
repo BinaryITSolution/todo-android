@@ -28,7 +28,6 @@ class EditTaskFragment : Fragment() {
 
     companion object {
         const val TAG = "EditTaskFragment"
-        fun newInstance() = EditTaskFragment()
     }
 
     private lateinit var viewModel: EditTaskViewModel
@@ -36,14 +35,11 @@ class EditTaskFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.edit_task_fragment, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.edit_task_fragment, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(EditTaskViewModel::class.java)
-        viewModel.init(context!!)
         resources.getStringArray(R.array.task_status_list).toCollection(viewModel.taskList)
 
         val args = EditTaskFragmentArgs.fromBundle(arguments!!)
@@ -95,8 +91,12 @@ class EditTaskFragment : Fragment() {
                 successDialog()
             }
             else {
-                errorDialog()
+                unSuccessFulDialog()
             }
+        })
+
+        viewModel.isError.observe(viewLifecycleOwner, Observer {
+            errorDialog(it)
         })
     }
 
@@ -112,15 +112,27 @@ class EditTaskFragment : Fragment() {
         }.show()
     }
 
-    private fun errorDialog(){
+    private fun unSuccessFulDialog(){
         alert {
+            title = getString(R.string.title_un_successful_dialog)
+            message = getString(R.string.msg_add_post_un_successful)
             isCancelable = false
-            title = getString(R.string.alert_error_title)
-            message = getString(R.string.alert_error_msg)
-            positiveButton("OK"){
-                it.dismiss()
+            positiveButton(getString(R.string.btn_ok)){dialog->
+                dialog.dismiss()
             }
         }.show()
+    }
+
+    private fun errorDialog(errorMsg: String){
+        alert {
+            title = getString(R.string.title_error_dialog)
+            message = errorMsg
+            isCancelable = false
+            positiveButton(getString(R.string.btn_ok)){dialog->
+                dialog.dismiss()
+            }
+        }.show()
+
     }
 
 

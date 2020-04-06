@@ -28,6 +28,7 @@ class SplashViewModel(application: Application) : AndroidViewModel(application) 
     var token = MutableLiveData<String>()
 
     init {
+         
         appPreferences = AppPreferences(sharedPreferences)
         token.value = appPreferences.getAccessToken()
     }
