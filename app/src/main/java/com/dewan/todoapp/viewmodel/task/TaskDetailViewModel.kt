@@ -19,8 +19,8 @@ class TaskDetailViewModel(application: Application) : AndroidViewModel(applicati
 
 
     private var sharesPreferences = application.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
-    private lateinit var appPreferences: AppPreferences
-    private lateinit var user_id: String
+    private var appPreferences: AppPreferences
+    private var userId: String
 
 
     val id: MutableLiveData<String> = MutableLiveData()
@@ -33,9 +33,10 @@ class TaskDetailViewModel(application: Application) : AndroidViewModel(applicati
     val isEditable: MutableLiveData<Boolean> = MutableLiveData()
 
 
-    init{
+    init {
         appPreferences = AppPreferences(sharesPreferences)
-        user_id = appPreferences.getUserId().toString()
+        userId = appPreferences.getUserId().toString()
+    }
 
 
 
