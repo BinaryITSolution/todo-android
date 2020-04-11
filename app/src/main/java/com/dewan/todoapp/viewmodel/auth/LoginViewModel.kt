@@ -2,11 +2,9 @@ package com.dewan.todoapp.viewmodel.auth
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.dewan.todoapp.BuildConfig
 import com.dewan.todoapp.model.local.AppPreferences
@@ -14,6 +12,7 @@ import com.dewan.todoapp.model.remote.Networking
 import com.dewan.todoapp.model.remote.request.auth.LoginRequest
 import com.dewan.todoapp.model.remote.response.auth.LoginResponse
 import com.dewan.todoapp.model.repository.LoginRepository
+import com.dewan.todoapp.util.network.NetworkHelper
 import kotlinx.coroutines.Dispatchers.IO
 import retrofit2.HttpException
 
@@ -31,6 +30,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     val loginResponse: MutableLiveData<LoginResponse>   =  MutableLiveData()
     val isSuccess: MutableLiveData<Boolean> = MutableLiveData()
     val isError: MutableLiveData<String> =  MutableLiveData()
+    val errorMsg: MutableLiveData<String> = MutableLiveData()
 
 
     init {
@@ -48,6 +48,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 emit(loginResponse.value)
             }
             else {
+                val error =  NetworkHelper.handelNetworkError(data)
+                errorMsg.postValue(error.message)
                 isSuccess.postValue(false)
             }
 
