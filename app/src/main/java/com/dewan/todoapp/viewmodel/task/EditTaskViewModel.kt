@@ -10,8 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.dewan.todoapp.BuildConfig
 import com.dewan.todoapp.model.local.AppPreferences
+import com.dewan.todoapp.model.local.db.AppDatabase
+import com.dewan.todoapp.model.local.entity.TaskEntity
 import com.dewan.todoapp.model.remote.Networking
 import com.dewan.todoapp.model.remote.request.todo.EditTaskRequest
+import com.dewan.todoapp.model.remote.response.todo.EditTaskResponse
 import com.dewan.todoapp.model.repository.AddTaskRepository
 import com.dewan.todoapp.model.repository.EditTaskRepository
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +36,7 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
     val userId: MutableLiveData<Int> = MutableLiveData()
 
     val id: MutableLiveData<String> = MutableLiveData()
+    val taskId: MutableLiveData<String> = MutableLiveData()
     val title: MutableLiveData<String> = MutableLiveData()
     val body: MutableLiveData<String> = MutableLiveData()
     val status: MutableLiveData<String> = MutableLiveData()
@@ -43,7 +47,8 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
     val isError: MutableLiveData<String> = MutableLiveData()
 
     init {
-        editTaskRepository = EditTaskRepository(networkService)
+
+        editTaskRepository = EditTaskRepository(networkService, AppDatabase.getInstance(application))
 
         appPreferences = AppPreferences(sharesPreferences)
         token = appPreferences.getAccessToken().toString()
@@ -60,13 +65,14 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
             try {
                 loading.postValue(true)
                 val data = editTaskRepository.editTak(token, EditTaskRequest(
-                    id.value!!.toInt(),
+                    taskId.value!!.toInt(),
                     userId.value.toString(),
                     title.value.toString(),
                     body.value.toString(),
                     status.value.toString()
                 ))
                 if (data.code() == 201){
+                    updateTask(data.body()!!)
                     isSuccess.postValue(true)
                 }
                 else {
@@ -78,18 +84,50 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
             }
             catch (httpException: HttpException){
                 Log.e(TAG,httpException.toString())
-                isError.value = httpException.toString()
+                isError.postValue( httpException.toString())
+                loading.postValue(false)
 
             }
             catch (exception: Exception){
                 Log.e(TAG,exception.toString())
-                isError.value = exception.toString()
+                isError.postValue(exception.toString())
+                loading.postValue(false)
             }
 
         }
 
     }
 
+    private fun updateTask(editTaskResponse: EditTaskResponse){
+
+        try {
+
+            CoroutineScope(Dispatchers.IO).launch {
+                loading.postValue(true)
+
+               val id =  editTaskRepository.updateTask(TaskEntity(
+                    id = id.value!!.toLong(),
+                    taskId = editTaskResponse.id,
+                    title = editTaskResponse.title,
+                    body = editTaskResponse.body,
+                    status = editTaskResponse.status,
+                    userId = editTaskResponse.userId.toInt(),
+                    createdAt = editTaskResponse.createdAt,
+                    updatedAt = editTaskResponse.updatedAt
+                ))
+
+                if (id > 0){
+                    Log.e(TAG,"Update Success: $id")
+                }
+
+                loading.postValue(false)
+            }
+
+        }
+        catch (error: Exception){
+            Log.e(TAG,error.toString())
+        }
+    }
 
 
 }

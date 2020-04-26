@@ -38,6 +38,14 @@ interface NetworkService {
     @GET(Endpoints.ALL_TASK)
     suspend fun getAllTask(@Header("Authorization") token: String): Response<List<TaskResponse>>
 
+    @GET("${Endpoints.GET_TASK_BY_ID} {maxId}")
+    suspend fun getTAskById(
+        @Header(
+            "Authorization"
+        ) token: String,
+        @Path("maxId") maxId: String
+    ): Response<List<TaskResponse>>
+
     @POST(Endpoints.EDIT_TASK)
     suspend fun editTask(
         @Header("Authorization") token: String,
@@ -60,7 +68,6 @@ interface NetworkService {
         @Part profile_image: MultipartBody.Part? = null,
         @Part("bio") bio: RequestBody
     ): Response<EditProfileResponse>
-
 
 
 }

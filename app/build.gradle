@@ -104,5 +104,14 @@ dependencies {
     implementation "com.github.dhaval2404:imagepicker:$imagepicker"
     implementation "com.github.florent37:inline-activity-result-kotlin:$inline_activity_result_kotlin"
 
+    //https://developer.android.com/training/data-storage/room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:$room_version"
+
+
+
 
 }

@@ -7,9 +7,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.dewan.todoapp.R
 import com.dewan.todoapp.databinding.CustomTaskListViewBinding
+import com.dewan.todoapp.model.local.entity.TaskEntity
 import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 
-class TaskAdaptor(private val taskList: ArrayList<TaskResponse>) :RecyclerView.Adapter<TaskAdaptor.ViewHolder>()  {
+class TaskAdaptor(private val taskList: ArrayList<TaskEntity>) :RecyclerView.Adapter<TaskAdaptor.ViewHolder>()  {
 
     private lateinit var taskCallBack: TaskCallBack
 
@@ -25,7 +26,7 @@ class TaskAdaptor(private val taskList: ArrayList<TaskResponse>) :RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data : TaskResponse = taskList[position]
+        val data : TaskEntity = taskList[position]
 
         when (data.status) {
             "PENDING" -> {
