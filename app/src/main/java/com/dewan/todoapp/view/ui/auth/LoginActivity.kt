@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.dewan.todoapp.R
 import com.dewan.todoapp.model.remote.request.auth.LoginRequest
 import com.dewan.todoapp.model.remote.response.auth.LoginResponse
+import com.dewan.todoapp.util.Validator
 import com.dewan.todoapp.view.ui.main.MainActivity
 import com.dewan.todoapp.viewmodel.auth.LoginViewModel
 import kotlinx.android.synthetic.main.activity_login.*
@@ -52,8 +53,34 @@ class LoginActivity : AppCompatActivity() {
         val email = txt_userId.text.toString()
         val password = txt_password.text.toString()
 
+        if (!Validator.validateEmail(email)){
+            alert {
+                isCancelable = false
+                title = getString(R.string.validator_title)
+                message = getString(R.string.validation_email_failed)
+                positiveButton("OK"){
+                    it.dismiss()
+                }
+            }.show()
+        }
+        else if (!Validator.validatePassword(password)){
+            alert {
+                isCancelable = false
+                title = getString(R.string.validator_title)
+                message = getString(R.string.validation_password_failed)
+                positiveButton("OK"){
+                    it.dismiss()
+                }
+            }.show()
+        }
+        else {
+            val loginRequest = LoginRequest(email,password)
+
+            login(loginRequest)
+        }
+
         //check for the empty value
-        when {
+        /*when {
             email.isEmpty() -> {
 
                 alert {
@@ -83,6 +110,7 @@ class LoginActivity : AppCompatActivity() {
                 login(loginRequest)
             }
         }
+         */
 
     }
 
@@ -126,7 +154,7 @@ class LoginActivity : AppCompatActivity() {
     private fun unSuccessFulDialog(){
         alert {
             title = getString(R.string.title_un_successful_dialog)
-            message = getString(R.string.msg_add_post_un_successful)
+            message = viewModel.errorMsg.value.toString()
             isCancelable = false
             positiveButton(getString(R.string.btn_ok)){dialog->
                 dialog.dismiss()

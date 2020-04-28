@@ -2,18 +2,15 @@ package com.dewan.todoapp.viewmodel.profile
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.dewan.todoapp.BuildConfig
 import com.dewan.todoapp.model.local.AppPreferences
 import com.dewan.todoapp.model.remote.Networking
 import com.dewan.todoapp.model.remote.response.profile.UserProfileResponse
 import com.dewan.todoapp.model.repository.UserProfileRepository
-import com.dewan.todoapp.util.NetworkHelper
 import retrofit2.HttpException
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {

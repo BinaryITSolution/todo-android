@@ -69,5 +69,15 @@
         <item>COMPLETED</item>
     </string-array>
 
+    <string name="validator_title">Validation Failed!</string>
+    <string name="validation_email_failed">Email validation failed. Please check your email address</string>
+    <string name="validation_password_failed">Password validation failed. Please check your password</string>
+    <string name="validation_confirm_password_failed">confirm password validation failed. Please check your confirm password</string>
+
+    <string name="error_code_400">The server could not understand the request due to invalid syntax.</string>
+    <string name="error_code_401">Unauthorized! Please login.</string>
+    <string name="error_code_404">The server can not find the requested resource.</string>
+    <string name="error_code_500">The server has encountered a situation it doesn\'t know how to handle.</string>
+
 
 </resources>

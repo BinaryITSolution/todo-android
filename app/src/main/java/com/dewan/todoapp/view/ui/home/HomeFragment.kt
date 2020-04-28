@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.dewan.todoapp.R
 import com.dewan.todoapp.databinding.HomeFragmentBinding
+import com.dewan.todoapp.model.local.entity.TaskEntity
 import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 import com.dewan.todoapp.view.adaptor.TaskAdaptor
 import com.dewan.todoapp.view.adaptor.TaskCallBack
@@ -31,7 +32,7 @@ class HomeFragment : Fragment(), TaskCallBack {
     }
 
     private lateinit var viewModel: HomeViewModel
-    private var taskList : ArrayList<TaskResponse> = ArrayList()
+    private var taskList : ArrayList<TaskEntity> = ArrayList()
     private lateinit var binding: HomeFragmentBinding
     private lateinit var recycleView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
@@ -56,18 +57,7 @@ class HomeFragment : Fragment(), TaskCallBack {
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         observer()
-        //get all task
-        getAllTask()
-    }
 
-    private fun getAllTask(){
-        viewModel.getAllTask().observe(viewLifecycleOwner, Observer {
-            //clear data for our task list
-            taskList.clear()
-            //add data to our task list
-            taskList = it!!.toCollection(taskList)
-            setRecycleView()
-        })
     }
 
     private fun setRecycleView(){
@@ -83,7 +73,7 @@ class HomeFragment : Fragment(), TaskCallBack {
             Log.e(TAG,"Position: $position is a long click")
         }
         else {
-            val data = viewModel.taskList.value?.get(position)
+            val data = viewModel.taskListFromDb.value?.get(position)
             findNavController().navigate(HomeFragmentDirections.actionNavigationHomeToTaskDetailFragment(
                 data?.createdAt.toString(),
                 data?.title.toString(),
@@ -91,7 +81,8 @@ class HomeFragment : Fragment(), TaskCallBack {
                 data?.status.toString(),
                 data?.userId.toString(),
                 data?.bg_color.toString(),
-                data?.id.toString()
+                data?.id.toString(),
+                data?.taskId.toString()
             ))
             Log.e(TAG,"Position: $position is a single click")
         }
@@ -104,6 +95,15 @@ class HomeFragment : Fragment(), TaskCallBack {
 
         viewModel.progress.observe(viewLifecycleOwner, Observer {
             pb_home.visibility = if (it) View.VISIBLE else View.GONE
+        })
+
+        viewModel.taskListFromDb.observe(viewLifecycleOwner, Observer {
+            //clear data for our task list
+            taskList.clear()
+            //add data to our task list
+            taskList = it!!.toCollection(taskList)
+            //set the recycle view
+            setRecycleView()
         })
     }
 

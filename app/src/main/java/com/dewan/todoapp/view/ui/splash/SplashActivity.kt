@@ -1,17 +1,12 @@
 package com.dewan.todoapp.view.ui.splash
 
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dewan.todoapp.R
-import com.dewan.todoapp.model.local.AppPreferences
 import com.dewan.todoapp.util.GeneralHelper
-import com.dewan.todoapp.util.NetworkHelper
+import com.dewan.todoapp.util.network.NetworkHelper
 import com.dewan.todoapp.view.ui.auth.LoginActivity
 import com.dewan.todoapp.view.ui.main.MainActivity
 import com.dewan.todoapp.viewmodel.splash.SplashViewModel
