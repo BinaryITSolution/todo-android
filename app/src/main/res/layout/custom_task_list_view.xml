@@ -6,7 +6,7 @@
     <data>
         <variable
             name="task"
-            type="com.dewan.todoapp.model.remote.response.todo.TaskResponse" />
+            type="com.dewan.todoapp.model.local.entity.TaskEntity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
