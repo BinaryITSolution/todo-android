@@ -3,6 +3,7 @@ package com.dewan.todoapp.model.remote
 import com.dewan.todoapp.model.remote.request.auth.LoginRequest
 import com.dewan.todoapp.model.remote.request.auth.RegisterRequest
 import com.dewan.todoapp.model.remote.request.todo.AddTaskRequest
+import com.dewan.todoapp.model.remote.request.todo.DeleteTaskRequest
 import com.dewan.todoapp.model.remote.request.todo.EditTaskRequest
 import com.dewan.todoapp.model.remote.response.auth.LoginResponse
 import com.dewan.todoapp.model.remote.response.auth.RegisterResponse
@@ -68,6 +69,13 @@ interface NetworkService {
         @Part profile_image: MultipartBody.Part? = null,
         @Part("bio") bio: RequestBody
     ): Response<EditProfileResponse>
+
+    @POST(Endpoints.DELETE_TASK)
+    suspend fun deleteTask(
+        @Header("Authorization") token: String,
+        @Body deleteTaskRequest: DeleteTaskRequest
+    ): Response<TaskResponse>
+
 
 
 }
