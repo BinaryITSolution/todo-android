@@ -10,8 +10,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 
 import com.dewan.todoapp.R
+import com.dewan.todoapp.view.ui.profile.edit.EditProfileFragmentDirections
 import com.dewan.todoapp.viewmodel.task.TaskDetailViewModel
 import kotlinx.android.synthetic.main.task_detail_fragment.*
+import org.jetbrains.anko.support.v4.alert
 
 class TaskDetailFragment : Fragment() {
 
@@ -37,7 +39,7 @@ class TaskDetailFragment : Fragment() {
         viewModel.status.value = args.status
         viewModel.userIdField.value = args.userId
         viewModel.bgColor.value = args.statusColor
-        viewModel.id.value = args.id
+        viewModel.idField.value = args.id
         viewModel.taskId.value = args.taskId
 
         viewModel.checkUserId()
@@ -46,17 +48,21 @@ class TaskDetailFragment : Fragment() {
 
         fb_edit.setOnClickListener {
             findNavController().navigate(TaskDetailFragmentDirections.actionTaskDetailFragmentToEditTaskFragment(
-                viewModel.id.value.toString(),
+                viewModel.idField.value.toString(),
                 viewModel.title.value.toString(),
                 viewModel.body.value.toString(),
                 viewModel.status.value.toString(),
                 viewModel.taskId.value.toString()
             ))
         }
+
+        fb_delete.setOnClickListener {
+            deleteConfirmDialog()
+        }
     }
 
     private fun observerData(){
-        viewModel.id.observe(viewLifecycleOwner, Observer {
+        viewModel.idField.observe(viewLifecycleOwner, Observer {
 
         })
         viewModel.dataTime.observe(viewLifecycleOwner, Observer {
@@ -83,10 +89,59 @@ class TaskDetailFragment : Fragment() {
 
         })
 
-        viewModel.isEditable.observe(viewLifecycleOwner, Observer {
+        viewModel.isValidUser.observe(viewLifecycleOwner, Observer {
             fb_edit.visibility = if (it) View.VISIBLE else View.GONE
+            fb_delete.visibility = if (it) View.VISIBLE else View.GONE
         })
 
+        viewModel.isDeleted.observe(viewLifecycleOwner, Observer {
+            if (it){
+                deleteSuccessDialog()
+            }
+            else {
+                deleteUnSuccessDialog()
+            }
+        })
+
+    }
+
+
+    private fun deleteConfirmDialog(){
+        alert {
+            isCancelable = false
+            title = getString(R.string.alert_delete_task_title)
+            message = getString(R.string.alert_delete_msg)
+            positiveButton("YES"){
+                it.dismiss()
+                viewModel.deleteTask()
+            }
+            negativeButton("NO"){
+                it.dismiss()
+            }
+        }.show()
+    }
+
+    private fun deleteSuccessDialog(){
+        alert {
+            isCancelable = false
+            title = getString(R.string.alert_delete_task_success_title)
+            message = getString(R.string.alert_delete_task_success_msg)
+            positiveButton("OK"){
+                it.dismiss()
+                findNavController().navigate(TaskDetailFragmentDirections.actionTaskDetailFragmentToNavigationHome())
+            }
+        }.show()
+    }
+
+    private fun deleteUnSuccessDialog(){
+        alert {
+            isCancelable = false
+            title = getString(R.string.alert_delete_task_error_title)
+            message = getString(R.string.alert_delete_task_error_msg)
+            positiveButton("OK"){
+                it.dismiss()
+            }
+        }.show()
     }
 
 }
