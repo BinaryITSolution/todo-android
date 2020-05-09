@@ -3,11 +3,11 @@ package com.dewan.todoapp.view.ui.home
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -21,6 +21,7 @@ import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 import com.dewan.todoapp.view.adaptor.TaskAdaptor
 import com.dewan.todoapp.view.adaptor.TaskCallBack
 import com.dewan.todoapp.view.ui.auth.LoginActivity
+import com.dewan.todoapp.view.ui.darkmode.DarkModeFragment
 import com.dewan.todoapp.viewmodel.home.HomeViewModel
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.jetbrains.anko.support.v4.alert
@@ -32,7 +33,7 @@ class HomeFragment : Fragment(), TaskCallBack {
     }
 
     private lateinit var viewModel: HomeViewModel
-    private var taskList : ArrayList<TaskEntity> = ArrayList()
+    private var taskList: ArrayList<TaskEntity> = ArrayList()
     private lateinit var binding: HomeFragmentBinding
     private lateinit var recycleView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
@@ -42,7 +43,7 @@ class HomeFragment : Fragment(), TaskCallBack {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater,R.layout.home_fragment,container,false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.home_fragment, container, false)
 
         //recycle view
         recycleView = binding.taskRecyclerView
@@ -56,11 +57,13 @@ class HomeFragment : Fragment(), TaskCallBack {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
+        setHasOptionsMenu(true)
+
         observer()
 
     }
 
-    private fun setRecycleView(){
+    private fun setRecycleView() {
         taskAdaptor = TaskAdaptor(taskList)
         recycleView.adapter = taskAdaptor
         taskAdaptor.setTaskCallBack(this)
@@ -69,26 +72,27 @@ class HomeFragment : Fragment(), TaskCallBack {
 
     override fun onTaskClick(view: View, position: Int, isLongClick: Boolean) {
 
-        if (isLongClick ){
-            Log.e(TAG,"Position: $position is a long click")
-        }
-        else {
+        if (isLongClick) {
+            Log.e(TAG, "Position: $position is a long click")
+        } else {
             val data = viewModel.taskListFromDb.value?.get(position)
-            findNavController().navigate(HomeFragmentDirections.actionNavigationHomeToTaskDetailFragment(
-                data?.createdAt.toString(),
-                data?.title.toString(),
-                data?.body.toString(),
-                data?.status.toString(),
-                data?.userId.toString(),
-                data?.bg_color.toString(),
-                data?.id.toString(),
-                data?.taskId.toString()
-            ))
-            Log.e(TAG,"Position: $position is a single click")
+            findNavController().navigate(
+                HomeFragmentDirections.actionNavigationHomeToTaskDetailFragment(
+                    data?.createdAt.toString(),
+                    data?.title.toString(),
+                    data?.body.toString(),
+                    data?.status.toString(),
+                    data?.userId.toString(),
+                    data?.bg_color.toString(),
+                    data?.id.toString(),
+                    data?.taskId.toString()
+                )
+            )
+            Log.e(TAG, "Position: $position is a single click")
         }
     }
 
-    private fun observer(){
+    private fun observer() {
         viewModel.isError.observe(viewLifecycleOwner, Observer {
             errorDialog(it)
         })
@@ -107,16 +111,31 @@ class HomeFragment : Fragment(), TaskCallBack {
         })
     }
 
-    private fun errorDialog(errorMsg: String){
+    private fun errorDialog(errorMsg: String) {
         alert {
             title = getString(R.string.title_error_dialog)
             message = errorMsg
             isCancelable = false
-            positiveButton(getString(R.string.btn_ok)){dialog->
+            positiveButton(getString(R.string.btn_ok)) { dialog ->
                 dialog.dismiss()
             }
         }.show()
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.mode_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.navigation_mode -> {
+                val dialog = DarkModeFragment()
+                dialog.show(activity!!.supportFragmentManager,"DarkModeFragment")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

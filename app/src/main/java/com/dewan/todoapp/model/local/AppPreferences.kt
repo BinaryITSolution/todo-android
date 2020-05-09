@@ -10,6 +10,7 @@ class AppPreferences(private val prefs: SharedPreferences) {
         const val KEY_USER_ID = "PREF_KEY_USER_ID"
         const val KEY_USER_NAME = "PREF_KEY_USER_NAME"
         const val KEY_USER_EMAIL = "PREF_KEY_USER_EMAIL"
+        const val KEY_THEME_MODE = "PREF_KEY_THEME_MODE"
     }
 
     fun setAccessToken(access_token: String){
@@ -32,6 +33,10 @@ class AppPreferences(private val prefs: SharedPreferences) {
         prefs.edit().putString(KEY_USER_EMAIL,user_email).apply()
     }
 
+    fun setThemeMode(value: Int){
+        prefs.edit().putInt(KEY_THEME_MODE,value).apply()
+    }
+
     fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN,null)
 
     fun getTokenId(): String? = prefs.getString(KEY_TOKEN_ID,null)
@@ -41,4 +46,6 @@ class AppPreferences(private val prefs: SharedPreferences) {
     fun getUserName(): String? = prefs.getString(KEY_USER_NAME,null)
 
     fun getUserEmail(): String? = prefs.getString(KEY_USER_EMAIL,null)
+
+    fun getThemeMode(): Int = prefs.getInt(KEY_THEME_MODE,0)
 }

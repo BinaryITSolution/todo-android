@@ -85,5 +85,14 @@
     <string name="error_code_404">The server can not find the requested resource.</string>
     <string name="error_code_500">The server has encountered a situation it doesn\'t know how to handle.</string>
 
+    <!-- App mode dialog -->
+
+    <string name="select_mode">Select App Theme Mode</string>
+    <string name="light_mode">Light</string>
+    <string name="dark_mode">Dark</string>
+    <string name="system_mode">System</string>
+    <string name="battery_mode">Battery</string>
+    <string name="app_mode">App Theme Mode</string>
+
 
 </resources>
