@@ -45,5 +45,6 @@ ext {
     imagepicker = "1.6"
     inline_activity_result_kotlin = "1.0.1"
     room_version = "2.2.5"
+    timber ="4.7.1"
 
 }

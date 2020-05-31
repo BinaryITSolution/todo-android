@@ -24,6 +24,7 @@ import com.dewan.todoapp.view.ui.auth.LoginActivity
 import com.dewan.todoapp.viewmodel.home.HomeViewModel
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.jetbrains.anko.support.v4.alert
+import timber.log.Timber
 
 class HomeFragment : Fragment(), TaskCallBack {
 
@@ -70,7 +71,7 @@ class HomeFragment : Fragment(), TaskCallBack {
     override fun onTaskClick(view: View, position: Int, isLongClick: Boolean) {
 
         if (isLongClick ){
-            Log.e(TAG,"Position: $position is a long click")
+            Timber.e("Position: $position is a long click")
         }
         else {
             val data = viewModel.taskListFromDb.value?.get(position)
@@ -84,7 +85,7 @@ class HomeFragment : Fragment(), TaskCallBack {
                 data?.id.toString(),
                 data?.taskId.toString()
             ))
-            Log.e(TAG,"Position: $position is a single click")
+            Timber.e("Position: $position is a single click")
         }
     }
 

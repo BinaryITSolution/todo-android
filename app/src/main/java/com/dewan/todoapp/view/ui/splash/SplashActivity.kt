@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.dewan.todoapp.R
 import com.dewan.todoapp.util.GeneralHelper
 import com.dewan.todoapp.util.network.NetworkHelper
@@ -37,8 +38,6 @@ class SplashActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             checkNetwork()
         }
-
-
 
     }
 
