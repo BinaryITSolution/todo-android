@@ -156,6 +156,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                                     taskId = task.id,
                                     title = task.title,
                                     body = task.body,
+                                    note = task.note,
                                     status = task.status,
                                     userId = task.userId,
                                     createdAt = task.createdAt,

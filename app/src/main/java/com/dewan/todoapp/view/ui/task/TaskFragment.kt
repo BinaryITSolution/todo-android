@@ -57,9 +57,10 @@ class TaskFragment : Fragment() {
     private fun prepareAddTask(view: View){
         val title = view.txt_title.text.toString()
         val body = view.txt_body.text.toString()
+        val note = view.txt_note.text.toString()
         val status =  view.spinner_task.selectedItem.toString()
 
-        val addTaskRequest = AddTaskRequest(userId,title,body,status)
+        val addTaskRequest = AddTaskRequest(userId,title,body,note,status)
         addTask(addTaskRequest)
 
     }

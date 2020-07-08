@@ -83,7 +83,8 @@ class HomeFragment : Fragment(), TaskCallBack {
                 data?.userId.toString(),
                 data?.bg_color.toString(),
                 data?.id.toString(),
-                data?.taskId.toString()
+                data?.taskId.toString(),
+                data?.note.toString()
             ))
             Timber.e("Position: $position is a single click")
         }

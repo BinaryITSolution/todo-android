@@ -12,6 +12,8 @@ data class EditTaskRequest(
     val title: String,
     @SerializedName("body")
     val body: String,
+    @SerializedName("note")
+    val note: String,
     @SerializedName("status")
     val status: String
 )

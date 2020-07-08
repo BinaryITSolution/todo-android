@@ -24,7 +24,9 @@
         </activity>
         <activity android:name=".view.ui.auth.SignUpActivity" />
         <activity android:name=".view.ui.auth.LoginActivity" />
-        <activity android:name=".view.ui.main.MainActivity"/>
+        <activity android:name=".view.ui.main.MainActivity"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
 
     </application>
 

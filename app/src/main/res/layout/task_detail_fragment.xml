@@ -43,7 +43,7 @@
         tools:text="" />
 
     <TextView
-        android:id="@+id/tv_status"
+        android:id="@+id/tv_note"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -52,6 +52,18 @@
         app:layout_constraintEnd_toStartOf="@+id/status_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_body"
+        tools:text="" />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="start|top"
+        app:layout_constraintEnd_toStartOf="@+id/status_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_note"
         tools:text="" />
 
     <TextView

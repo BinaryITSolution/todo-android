@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         bottomNavigation()
+
+
     }
 
     private fun bottomNavigation(){
