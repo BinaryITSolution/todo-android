@@ -51,7 +51,7 @@ class TaskAdaptor(private val taskList: ArrayList<TaskEntity>) :RecyclerView.Ada
 
 
     class ViewHolder(binding: CustomTaskListViewBinding) : RecyclerView.ViewHolder(binding.root),
-    View.OnClickListener,View.OnLongClickListener{
+    View.OnClickListener,View.OnLongClickListener {
         var taskListBinding : CustomTaskListViewBinding = binding
         private lateinit var taskCallBack: TaskCallBack
 
