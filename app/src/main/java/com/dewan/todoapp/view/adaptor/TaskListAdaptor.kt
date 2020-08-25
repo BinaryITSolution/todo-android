@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dewan.todoapp.R
 import com.dewan.todoapp.databinding.CustomTaskListViewBinding
@@ -12,8 +13,8 @@ import com.dewan.todoapp.model.local.entity.TaskEntity
 import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 import timber.log.Timber
 
-class TaskAdaptor(private var taskList: List<TaskEntity>) :
-    RecyclerView.Adapter<TaskAdaptor.ViewHolder>() {
+class TaskListAdaptor :
+    ListAdapter<TaskEntity,TaskListAdaptor.ViewHolder>(TaskDiffUtilItemCallback()) {
 
     private lateinit var taskCallBack: TaskCallBack
 
@@ -26,12 +27,10 @@ class TaskAdaptor(private var taskList: List<TaskEntity>) :
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return taskList.size
-    }
+    override fun getItemCount(): Int  = currentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data: TaskEntity = taskList[position]
+        val data: TaskEntity = currentList[position]
 
         when (data.status) {
             "PENDING" -> {
@@ -53,13 +52,6 @@ class TaskAdaptor(private var taskList: List<TaskEntity>) :
     fun setTaskCallBack(taskCallBack: TaskCallBack) {
         this.taskCallBack = taskCallBack
     }
-
-    fun setDetail(newList: List<TaskEntity>){
-        val diffResult = DiffUtil.calculateDiff(TaskDiffUtil(taskList,newList))
-        taskList = newList
-        diffResult.dispatchUpdatesTo(this)
-    }
-
 
     class ViewHolder(binding: CustomTaskListViewBinding) : RecyclerView.ViewHolder(binding.root),
         View.OnClickListener, View.OnLongClickListener {
@@ -93,22 +85,16 @@ class TaskAdaptor(private var taskList: List<TaskEntity>) :
 
     }
 
-    class TaskDiffUtil(
-        var oldTaskList: List<TaskEntity>,
-        var newTaskList: List<TaskEntity>
-    ): DiffUtil.Callback() {
+    class TaskDiffUtilItemCallback : DiffUtil.ItemCallback<TaskEntity>() {
 
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldTaskList[oldItemPosition].id == newTaskList[newItemPosition].id
+        override fun areItemsTheSame(oldItem: TaskEntity, newItem: TaskEntity): Boolean {
+            return  oldItem.id == newItem.id
         }
 
-        override fun getOldListSize(): Int = oldTaskList.size
-
-        override fun getNewListSize(): Int = newTaskList.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return  oldTaskList[oldItemPosition] == newTaskList[newItemPosition]
+        override fun areContentsTheSame(oldItem: TaskEntity, newItem: TaskEntity): Boolean {
+            return  oldItem == newItem
         }
+
 
     }
 }

@@ -17,7 +17,9 @@ import com.dewan.todoapp.R
 import com.dewan.todoapp.databinding.HomeFragmentBinding
 import com.dewan.todoapp.model.local.entity.TaskEntity
 import com.dewan.todoapp.view.adaptor.TaskAdaptor
+import com.dewan.todoapp.view.adaptor.TaskAdaptorAsyncListDiffer
 import com.dewan.todoapp.view.adaptor.TaskCallBack
+import com.dewan.todoapp.view.adaptor.TaskListAdaptor
 import com.dewan.todoapp.viewmodel.home.HomeViewModel
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.jetbrains.anko.support.v4.alert
@@ -31,11 +33,12 @@ class HomeFragment : Fragment(), TaskCallBack {
     }
 
     private lateinit var viewModel: HomeViewModel
-    private var taskList : ArrayList<TaskEntity> = ArrayList()
     private lateinit var binding: HomeFragmentBinding
     private lateinit var recycleView: RecyclerView
-    private lateinit var layoutManager: RecyclerView.LayoutManager
-    private lateinit var taskAdaptor: TaskAdaptor
+    private lateinit var mLayoutManager: RecyclerView.LayoutManager
+    //private lateinit var mTaskAdaptor: TaskAdaptor
+    //private lateinit var mTaskAdaptorAsyncListDiffer: TaskAdaptorAsyncListDiffer
+    private lateinit var mTaskListAdaptor: TaskListAdaptor
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +48,17 @@ class HomeFragment : Fragment(), TaskCallBack {
 
         //recycle view
         recycleView = binding.taskRecyclerView
-        layoutManager = LinearLayoutManager(context)
-        recycleView.layoutManager = layoutManager
+        //mTaskAdaptor = TaskAdaptor(listOf())
+        //mTaskAdaptorAsyncListDiffer = TaskAdaptorAsyncListDiffer()
+        mTaskListAdaptor = TaskListAdaptor()
+
+        mLayoutManager = LinearLayoutManager(context)
+        recycleView.apply {
+            layoutManager = mLayoutManager
+            adapter = mTaskListAdaptor
+        }
+        mTaskListAdaptor.setTaskCallBack(this)
+
 
         return binding.root
     }
@@ -56,13 +68,6 @@ class HomeFragment : Fragment(), TaskCallBack {
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         observer()
-
-    }
-
-    private fun setRecycleView(){
-        taskAdaptor = TaskAdaptor(taskList)
-        recycleView.adapter = taskAdaptor
-        taskAdaptor.setTaskCallBack(this)
 
     }
 
@@ -98,12 +103,8 @@ class HomeFragment : Fragment(), TaskCallBack {
         })
 
         viewModel.taskListFromDb.observe(viewLifecycleOwner, Observer {
-            //clear data for our task list
-            taskList.clear()
-            //add data to our task list
-            taskList = it!!.toCollection(taskList)
-            //set the recycle view
-            setRecycleView()
+            mTaskListAdaptor.submitList(it)
+
         })
     }
 
