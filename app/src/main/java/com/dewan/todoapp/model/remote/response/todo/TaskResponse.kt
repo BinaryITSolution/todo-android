@@ -8,16 +8,18 @@ import com.google.gson.annotations.SerializedName
 import org.jetbrains.anko.textColor
 
 data class TaskResponse(
-    @SerializedName("body")
-    val body: String,
-    @SerializedName("created_at")
-    val createdAt: String,
     @SerializedName("id")
     val id: Int,
-    @SerializedName("status")
-    val status: String,
     @SerializedName("title")
     val title: String,
+    @SerializedName("body")
+    val body: String,
+    @SerializedName("note")
+    val note: String,
+    @SerializedName("status")
+    val status: String,
+    @SerializedName("created_at")
+    val createdAt: String,
     @SerializedName("updated_at")
     val updatedAt: String,
     @SerializedName("user_id")

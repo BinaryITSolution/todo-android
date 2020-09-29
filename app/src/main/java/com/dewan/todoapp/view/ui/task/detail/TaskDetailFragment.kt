@@ -32,10 +32,11 @@ class TaskDetailFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(TaskDetailViewModel::class.java)
 
-        val args = TaskDetailFragmentArgs.fromBundle(arguments!!)
+        val args = TaskDetailFragmentArgs.fromBundle(requireArguments())
         viewModel.dataTime.value = args.datTime
         viewModel.title.value = args.title
         viewModel.body.value = args.body
+        viewModel.note.value = args.note
         viewModel.status.value = args.status
         viewModel.userIdField.value = args.userId
         viewModel.bgColor.value = args.statusColor
@@ -48,11 +49,12 @@ class TaskDetailFragment : Fragment() {
 
         fb_edit.setOnClickListener {
             findNavController().navigate(TaskDetailFragmentDirections.actionTaskDetailFragmentToEditTaskFragment(
-                viewModel.idField.value.toString(),
+                viewModel.taskId.value.toString(),
                 viewModel.title.value.toString(),
                 viewModel.body.value.toString(),
                 viewModel.status.value.toString(),
-                viewModel.taskId.value.toString()
+                viewModel.idField.value.toString(),
+                viewModel.note.value.toString()
             ))
         }
 
@@ -74,6 +76,10 @@ class TaskDetailFragment : Fragment() {
 
         viewModel.body.observe(viewLifecycleOwner, Observer {
             tv_body.text = it
+        })
+
+        viewModel.note.observe(viewLifecycleOwner, Observer {
+            tv_note.text = it
         })
 
         viewModel.status.observe(viewLifecycleOwner, Observer {

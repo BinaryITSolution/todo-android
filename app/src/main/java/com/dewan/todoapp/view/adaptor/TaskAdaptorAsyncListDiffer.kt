@@ -4,18 +4,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.dewan.todoapp.R
 import com.dewan.todoapp.databinding.CustomTaskListViewBinding
 import com.dewan.todoapp.model.local.entity.TaskEntity
-import com.dewan.todoapp.model.remote.response.todo.TaskResponse
-import timber.log.Timber
 
-class TaskAdaptor(private var taskList: List<TaskEntity>) :
-    RecyclerView.Adapter<TaskAdaptor.ViewHolder>() {
+
+class TaskAdaptorAsyncListDiffer() :
+    RecyclerView.Adapter<TaskAdaptorAsyncListDiffer.ViewHolder>() {
 
     private lateinit var taskCallBack: TaskCallBack
+
+    private val diffUtilCallback = object : DiffUtil.ItemCallback<TaskEntity>(){
+
+        override fun areItemsTheSame(oldItem: TaskEntity, newItem: TaskEntity): Boolean {
+            return  oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: TaskEntity, newItem: TaskEntity): Boolean {
+            return oldItem == newItem
+        }
+
+    }
+
+    private val asyncListDiffer = AsyncListDiffer(this,diffUtilCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: CustomTaskListViewBinding = DataBindingUtil.inflate(
@@ -26,12 +40,10 @@ class TaskAdaptor(private var taskList: List<TaskEntity>) :
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return taskList.size
-    }
+    override fun getItemCount(): Int = asyncListDiffer.currentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data: TaskEntity = taskList[position]
+        val data: TaskEntity = asyncListDiffer.currentList[position]
 
         when (data.status) {
             "PENDING" -> {
@@ -55,9 +67,7 @@ class TaskAdaptor(private var taskList: List<TaskEntity>) :
     }
 
     fun setDetail(newList: List<TaskEntity>){
-        val diffResult = DiffUtil.calculateDiff(TaskDiffUtil(taskList,newList))
-        taskList = newList
-        diffResult.dispatchUpdatesTo(this)
+        asyncListDiffer.submitList(newList)
     }
 
 
@@ -93,22 +103,4 @@ class TaskAdaptor(private var taskList: List<TaskEntity>) :
 
     }
 
-    class TaskDiffUtil(
-        var oldTaskList: List<TaskEntity>,
-        var newTaskList: List<TaskEntity>
-    ): DiffUtil.Callback() {
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldTaskList[oldItemPosition].id == newTaskList[newItemPosition].id
-        }
-
-        override fun getOldListSize(): Int = oldTaskList.size
-
-        override fun getNewListSize(): Int = newTaskList.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return  oldTaskList[oldItemPosition] == newTaskList[newItemPosition]
-        }
-
-    }
 }

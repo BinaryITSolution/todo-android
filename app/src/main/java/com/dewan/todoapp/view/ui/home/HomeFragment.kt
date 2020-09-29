@@ -1,12 +1,12 @@
 package com.dewan.todoapp.view.ui.home
 
-import androidx.lifecycle.ViewModelProviders
+
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,13 +17,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dewan.todoapp.R
 import com.dewan.todoapp.databinding.HomeFragmentBinding
 import com.dewan.todoapp.model.local.entity.TaskEntity
-import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 import com.dewan.todoapp.view.adaptor.TaskAdaptor
+import com.dewan.todoapp.view.adaptor.TaskAdaptorAsyncListDiffer
 import com.dewan.todoapp.view.adaptor.TaskCallBack
-import com.dewan.todoapp.view.ui.auth.LoginActivity
+import com.dewan.todoapp.view.adaptor.TaskListAdaptor
 import com.dewan.todoapp.viewmodel.home.HomeViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.jetbrains.anko.support.v4.alert
+import timber.log.Timber
+
 
 class HomeFragment : Fragment(), TaskCallBack {
 
@@ -32,11 +35,12 @@ class HomeFragment : Fragment(), TaskCallBack {
     }
 
     private lateinit var viewModel: HomeViewModel
-    private var taskList : ArrayList<TaskEntity> = ArrayList()
     private lateinit var binding: HomeFragmentBinding
     private lateinit var recycleView: RecyclerView
-    private lateinit var layoutManager: RecyclerView.LayoutManager
-    private lateinit var taskAdaptor: TaskAdaptor
+    private lateinit var mLayoutManager: RecyclerView.LayoutManager
+    //private lateinit var mTaskAdaptor: TaskAdaptor
+    //private lateinit var mTaskAdaptorAsyncListDiffer: TaskAdaptorAsyncListDiffer
+    private lateinit var mTaskListAdaptor: TaskListAdaptor
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,8 +50,17 @@ class HomeFragment : Fragment(), TaskCallBack {
 
         //recycle view
         recycleView = binding.taskRecyclerView
-        layoutManager = LinearLayoutManager(context)
-        recycleView.layoutManager = layoutManager
+        //mTaskAdaptor = TaskAdaptor(listOf())
+        //mTaskAdaptorAsyncListDiffer = TaskAdaptorAsyncListDiffer()
+        mTaskListAdaptor = TaskListAdaptor()
+
+        mLayoutManager = LinearLayoutManager(context)
+        recycleView.apply {
+            layoutManager = mLayoutManager
+            adapter = mTaskListAdaptor
+        }
+        mTaskListAdaptor.setTaskCallBack(this)
+
 
         return binding.root
     }
@@ -60,17 +73,10 @@ class HomeFragment : Fragment(), TaskCallBack {
 
     }
 
-    private fun setRecycleView(){
-        taskAdaptor = TaskAdaptor(taskList)
-        recycleView.adapter = taskAdaptor
-        taskAdaptor.setTaskCallBack(this)
-
-    }
-
     override fun onTaskClick(view: View, position: Int, isLongClick: Boolean) {
 
         if (isLongClick ){
-            Log.e(TAG,"Position: $position is a long click")
+            Timber.e("Position: $position is a long click")
         }
         else {
             val data = viewModel.taskListFromDb.value?.get(position)
@@ -82,9 +88,10 @@ class HomeFragment : Fragment(), TaskCallBack {
                 data?.userId.toString(),
                 data?.bg_color.toString(),
                 data?.id.toString(),
-                data?.taskId.toString()
+                data?.taskId.toString(),
+                data?.note.toString()
             ))
-            Log.e(TAG,"Position: $position is a single click")
+            Timber.e("Position: $position is a single click")
         }
     }
 
@@ -98,12 +105,21 @@ class HomeFragment : Fragment(), TaskCallBack {
         })
 
         viewModel.taskListFromDb.observe(viewLifecycleOwner, Observer {
-            //clear data for our task list
-            taskList.clear()
-            //add data to our task list
-            taskList = it!!.toCollection(taskList)
-            //set the recycle view
-            setRecycleView()
+            mTaskListAdaptor.submitList(it)
+
+        })
+
+        viewModel.errorMsgInt.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                showSnackBarWithResourceId(it)
+            }
+        })
+
+        viewModel.errorMsgString.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                showSnackBarWithString(it)
+            }
+
         })
     }
 
@@ -117,6 +133,32 @@ class HomeFragment : Fragment(), TaskCallBack {
             }
         }.show()
 
+    }
+
+    private fun showSnackBarWithResourceId(resId: Int){
+        Snackbar.make(requireView(),getString(resId), Snackbar.LENGTH_INDEFINITE)
+            .apply {
+                setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.red))
+                    .setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setAction(getString(R.string.sncakbar_close)) {
+
+                    }
+                    .show()
+            }
+    }
+
+    private fun showSnackBarWithString(msg: String){
+        Snackbar.make(requireView(),msg, Snackbar.LENGTH_INDEFINITE)
+            .apply {
+                setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.red))
+                    .setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setAction(getString(R.string.sncakbar_close)) {
+
+                    }
+                    .show()
+            }
     }
 
 

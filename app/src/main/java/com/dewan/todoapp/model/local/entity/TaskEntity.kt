@@ -28,14 +28,16 @@ data class TaskEntity(
     @ColumnInfo(name = "updatedAt")
     val updatedAt: String,
     @ColumnInfo(name = "bg_color")
-    var bg_color: Int = 0
+    var bg_color: Int = 0,
+    @ColumnInfo(name = "note", defaultValue = "")
+    var note: String = ""
 
 ) {
 
     companion object {
 
-        @JvmStatic
         @BindingAdapter("viewBackground")
+        @JvmStatic
         fun TextView.setBgColor(color: Int?){
             if (color != null){
                 this.setBackgroundResource(color)

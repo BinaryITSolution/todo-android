@@ -40,7 +40,7 @@ interface NetworkService {
     suspend fun getAllTask(@Header("Authorization") token: String): Response<List<TaskResponse>>
 
     @GET("${Endpoints.GET_TASK_BY_ID} {maxId}")
-    suspend fun getTAskById(
+    suspend fun getTaskById(
         @Header(
             "Authorization"
         ) token: String,
