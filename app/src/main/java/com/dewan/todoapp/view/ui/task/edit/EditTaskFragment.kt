@@ -42,11 +42,12 @@ class EditTaskFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(EditTaskViewModel::class.java)
         resources.getStringArray(R.array.task_status_list).toCollection(viewModel.taskList)
 
-        val args = EditTaskFragmentArgs.fromBundle(arguments!!)
+        val args = EditTaskFragmentArgs.fromBundle(requireArguments())
         viewModel.id.value = args.id
         viewModel.taskId.value = args.taskId
         viewModel.title.value = args.taskTitle
         viewModel.body.value = args.taskBody
+        viewModel.note.value = args.note
         viewModel.status.value = args.taskStatus
 
 
@@ -54,6 +55,7 @@ class EditTaskFragment : Fragment() {
             viewModel.status.value = edit_spinner_task.selectedItem.toString()
             viewModel.title.value = edit_title.text.toString()
             viewModel.body.value = edit_body.text.toString()
+            viewModel.note.value = edit_note.text.toString()
             viewModel.editTask()
         }
 
@@ -75,6 +77,11 @@ class EditTaskFragment : Fragment() {
 
         viewModel.body.observe(viewLifecycleOwner, Observer {
             edit_body.setText(it)
+
+        })
+
+        viewModel.note.observe(viewLifecycleOwner, Observer {
+            edit_note.setText(it)
 
         })
 

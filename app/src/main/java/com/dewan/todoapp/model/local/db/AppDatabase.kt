@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dewan.todoapp.model.local.dao.TaskDao
+import com.dewan.todoapp.model.local.db.migration.MIGRATION_2_3
 import com.dewan.todoapp.model.local.entity.TaskEntity
 
-@Database(entities = [TaskEntity::class],version = 2, exportSchema = false)
+@Database(entities = [TaskEntity::class],version = 3, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
@@ -28,7 +29,8 @@ abstract class AppDatabase: RoomDatabase() {
                         AppDatabase::class.java,
                         "task_db"
                     )
-                        .fallbackToDestructiveMigration()
+                        //.fallbackToDestructiveMigration()
+                        .addMigrations(MIGRATION_2_3)
                         .build()
                     INSTANCE = instance
                 }

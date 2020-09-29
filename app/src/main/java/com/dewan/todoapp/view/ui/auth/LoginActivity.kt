@@ -3,6 +3,7 @@ package com.dewan.todoapp.view.ui.auth
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dewan.todoapp.R
@@ -115,28 +116,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun login(login_request: LoginRequest){
-
-        viewModel.login(login_request).observe(this, Observer {
-
-            it?.let {
-                 saveUserData(it)
-            }
-
-
-        })
+        viewModel.doLogin(login_request)
     }
 
-    private fun saveUserData(loginResponse: LoginResponse){
-
-        viewModel.saveUserDetail(loginResponse).observe(this, Observer {
-
-            if (it){
-                finish()
-                startActivity(intentFor<MainActivity>())
-            }
-        })
-
-    }
 
     private fun observer(){
         viewModel.isError.observe(this, Observer {
@@ -144,9 +126,19 @@ class LoginActivity : AppCompatActivity() {
         })
 
         viewModel.isSuccess.observe(this, Observer {
-            if (!it){
+            if (it){
+                finish()
+                startActivity(intentFor<MainActivity>())
+
+            }
+            else {
                 unSuccessFulDialog()
             }
+
+        })
+
+        viewModel.isLoading.observe(this, Observer {
+            login_progressBar.visibility = if (it) View.VISIBLE else View.GONE
         })
     }
 

@@ -30,7 +30,8 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
 
     private val networkService = Networking.create(BuildConfig.BASE_URL)
     private var editTaskRepository: EditTaskRepository
-    private var sharesPreferences = application.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
+    private var sharesPreferences =
+        application.getSharedPreferences(BuildConfig.PREF_NAME, Context.MODE_PRIVATE)
     private var appPreferences: AppPreferences
     private var token: String = ""
     val userId: MutableLiveData<Int> = MutableLiveData()
@@ -39,6 +40,7 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
     val taskId: MutableLiveData<String> = MutableLiveData()
     val title: MutableLiveData<String> = MutableLiveData()
     val body: MutableLiveData<String> = MutableLiveData()
+    val note: MutableLiveData<String> = MutableLiveData()
     val status: MutableLiveData<String> = MutableLiveData()
     val index: MutableLiveData<Int> = MutableLiveData()
     val taskList: ArrayList<String> = ArrayList()
@@ -48,7 +50,8 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
 
     init {
 
-        editTaskRepository = EditTaskRepository(networkService, AppDatabase.getInstance(application))
+        editTaskRepository =
+            EditTaskRepository(networkService, AppDatabase.getInstance(application))
 
         appPreferences = AppPreferences(sharesPreferences)
         token = appPreferences.getAccessToken().toString()
@@ -56,40 +59,43 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
     }
 
 
-    fun getIndexFromTaskList(){
+    fun getIndexFromTaskList() {
         index.value = taskList.indexOf(status.value)
     }
 
+    /*
+    this is to update the task in api
+     */
     fun editTask() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 loading.postValue(true)
-                val data = editTaskRepository.editTak(token, EditTaskRequest(
-                    taskId.value!!.toInt(),
-                    userId.value.toString(),
-                    title.value.toString(),
-                    body.value.toString(),
-                    status.value.toString()
-                ))
-                if (data.code() == 201){
+                val data = editTaskRepository.editTak(
+                    token, EditTaskRequest(
+                        taskId.value!!.toInt(),
+                        userId.value.toString(),
+                        title.value.toString(),
+                        body.value.toString(),
+                        note.value!!.toString(),
+                        status.value.toString()
+                    )
+                )
+                if (data.code() == 201) {
                     updateTask(data.body()!!)
                     isSuccess.postValue(true)
-                }
-                else {
+                } else {
                     isSuccess.postValue(false)
                 }
 
                 loading.postValue(false)
 
-            }
-            catch (httpException: HttpException){
-                Log.e(TAG,httpException.toString())
-                isError.postValue( httpException.toString())
+            } catch (httpException: HttpException) {
+                Log.e(TAG, httpException.toString())
+                isError.postValue(httpException.toString())
                 loading.postValue(false)
 
-            }
-            catch (exception: Exception){
-                Log.e(TAG,exception.toString())
+            } catch (exception: Exception) {
+                Log.e(TAG, exception.toString())
                 isError.postValue(exception.toString())
                 loading.postValue(false)
             }
@@ -98,34 +104,39 @@ class EditTaskViewModel(application: Application) : AndroidViewModel(application
 
     }
 
-    private fun updateTask(editTaskResponse: EditTaskResponse){
+    /*
+    this is to update the task in local db
+     */
+    private fun updateTask(editTaskResponse: EditTaskResponse) {
 
         try {
 
             CoroutineScope(Dispatchers.IO).launch {
                 loading.postValue(true)
 
-               val id =  editTaskRepository.updateTask(TaskEntity(
-                    id = id.value!!.toLong(),
-                    taskId = editTaskResponse.id,
-                    title = editTaskResponse.title,
-                    body = editTaskResponse.body,
-                    status = editTaskResponse.status,
-                    userId = editTaskResponse.userId.toInt(),
-                    createdAt = editTaskResponse.createdAt,
-                    updatedAt = editTaskResponse.updatedAt
-                ))
+                val id = editTaskRepository.updateTask(
+                    TaskEntity(
+                        id = id.value!!.toLong(),
+                        taskId = editTaskResponse.id,
+                        title = editTaskResponse.title,
+                        body = editTaskResponse.body,
+                        note = editTaskResponse.note,
+                        status = editTaskResponse.status,
+                        userId = editTaskResponse.userId.toInt(),
+                        createdAt = editTaskResponse.createdAt,
+                        updatedAt = editTaskResponse.updatedAt
+                    )
+                )
 
-                if (id > 0){
-                    Log.e(TAG,"Update Success: $id")
+                if (id > 0) {
+                    Log.e(TAG, "Update Success: $id")
                 }
 
                 loading.postValue(false)
             }
 
-        }
-        catch (error: Exception){
-            Log.e(TAG,error.toString())
+        } catch (error: Exception) {
+            Log.e(TAG, error.toString())
         }
     }
 

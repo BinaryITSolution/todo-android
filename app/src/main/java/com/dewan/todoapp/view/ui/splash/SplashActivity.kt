@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.dewan.todoapp.R
 import com.dewan.todoapp.util.GeneralHelper
 import com.dewan.todoapp.util.network.NetworkHelper
@@ -14,6 +15,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.intentFor
+import timber.log.Timber
 
 class SplashActivity : AppCompatActivity() {
 
@@ -38,6 +40,7 @@ class SplashActivity : AppCompatActivity() {
             checkNetwork()
         }
 
+        //Timber.e(RuntimeException("Test Crash"))
 
 
     }
