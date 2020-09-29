@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +22,7 @@ import com.dewan.todoapp.view.adaptor.TaskAdaptorAsyncListDiffer
 import com.dewan.todoapp.view.adaptor.TaskCallBack
 import com.dewan.todoapp.view.adaptor.TaskListAdaptor
 import com.dewan.todoapp.viewmodel.home.HomeViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
@@ -106,6 +108,19 @@ class HomeFragment : Fragment(), TaskCallBack {
             mTaskListAdaptor.submitList(it)
 
         })
+
+        viewModel.errorMsgInt.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                showSnackBarWithResourceId(it)
+            }
+        })
+
+        viewModel.errorMsgString.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                showSnackBarWithString(it)
+            }
+
+        })
     }
 
     private fun errorDialog(errorMsg: String){
@@ -118,6 +133,32 @@ class HomeFragment : Fragment(), TaskCallBack {
             }
         }.show()
 
+    }
+
+    private fun showSnackBarWithResourceId(resId: Int){
+        Snackbar.make(requireView(),getString(resId), Snackbar.LENGTH_INDEFINITE)
+            .apply {
+                setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.red))
+                    .setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setAction(getString(R.string.sncakbar_close)) {
+
+                    }
+                    .show()
+            }
+    }
+
+    private fun showSnackBarWithString(msg: String){
+        Snackbar.make(requireView(),msg, Snackbar.LENGTH_INDEFINITE)
+            .apply {
+                setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.red))
+                    .setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    .setAction(getString(R.string.sncakbar_close)) {
+
+                    }
+                    .show()
+            }
     }
 
 

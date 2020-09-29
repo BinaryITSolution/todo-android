@@ -4,22 +4,23 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
+import androidx.lifecycle.*
 import com.dewan.todoapp.BuildConfig
+import com.dewan.todoapp.R
 import com.dewan.todoapp.model.local.AppPreferences
 import com.dewan.todoapp.model.local.db.AppDatabase
 import com.dewan.todoapp.model.local.entity.TaskEntity
 import com.dewan.todoapp.model.remote.Networking
 import com.dewan.todoapp.model.remote.response.todo.TaskResponse
 import com.dewan.todoapp.model.repository.TaskRepository
+import com.dewan.todoapp.util.ResultSet
 import com.dewan.todoapp.util.network.NetworkHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import timber.log.Timber
 import kotlin.math.max
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
@@ -37,7 +38,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val taskList: MutableLiveData<List<TaskResponse>> = MutableLiveData()
     val taskListFromDb: MutableLiveData<List<TaskEntity>> = MutableLiveData()
     val progress: MutableLiveData<Boolean> = MutableLiveData()
+
     val isError: MutableLiveData<String> = MutableLiveData()
+    val errorMsgInt: MutableLiveData<Int> = MutableLiveData()
+    val errorMsgString: MutableLiveData<String> = MutableLiveData()
+
     private val maxRecId: MutableLiveData<String> = MutableLiveData()
     private var context: Context? = null
 
@@ -100,115 +105,133 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun getMaxIdFromDb() {
-        CoroutineScope(Dispatchers.IO).launch {
 
-            try {
+        viewModelScope.launch(Dispatchers.Main) {
 
-                /*
-                get the max rec id from db
-                 */
-                var maxId = taskRepository.getMaxId()
-                //if maxid is null then we set to 0
-                if (maxId == null) {
-                    maxId = 0
+            launch(Dispatchers.IO) {
+
+                Timber.d("getMaxIdFromDb: ${Thread.currentThread().name}")
+
+                when (val result = taskRepository.getMaxId()) {
+                    is ResultSet.Success -> {
+                        var maxId = 0
+
+                        if (result.data != null) {
+                            maxId = result.data as Int
+                        }
+                        /*
+                          get the task y id from API
+                         */
+                        getTaskById(maxId.toString())
+
+                        /*
+                        set the max rec id value
+                         */
+                        maxRecId.postValue(maxId.toString())
+
+                    }
+                    is ResultSet.Error -> {
+                        if (result.error != null) {
+                            errorMsgString.postValue(result.error.localizedMessage)
+                        } else {
+                            errorMsgInt.postValue(result.errorMsg)
+                        }
+                    }
                 }
-
-                /*
-                get the task y id from API
-                 */
-                getTaskById(maxId.toString())
-
-                /*
-                set the max rec id value
-                 */
-                maxRecId.postValue(maxId.toString())
-
-            } catch (error: Exception) {
-                Log.e(TAG, error.message.toString())
             }
         }
+
     }
 
     /*
-     get the task y id from API
+     get the task by id from API
     */
-    private fun getTaskById(maxId: String) {
+    private suspend fun getTaskById(maxId: String) {
 
-        try {
-            if (NetworkHelper.isNetworkConnected(context!!)){
+        coroutineScope {
 
-                CoroutineScope(Dispatchers.Main).launch {
+            Timber.d("getTaskById: ${Thread.currentThread().name}")
 
+            try {
+                if (NetworkHelper.isNetworkConnected(context!!)) {
                     progress.postValue(true)
 
-                    val data = taskRepository.getTaskById(token, maxId)
+                    when (val result = taskRepository.getTaskById(token, maxId)) {
 
-                    if (data.code() == 200) {
-                        taskList.value = data.body()
+                        is ResultSet.Success -> {
 
-                        /*
-                        insert task list to local database
-                         */
-                        for (task in taskList.value!!) {
+                            val data = result.data as List<*>
 
-                            val id = taskRepository.insert(
-                                TaskEntity(
-                                    taskId = task.id,
-                                    title = task.title,
-                                    body = task.body,
-                                    note = task.note,
-                                    status = task.status,
-                                    userId = task.userId,
-                                    createdAt = task.createdAt,
-                                    updatedAt = task.updatedAt
-                                )
-                            )
-                            Log.d(TAG, "New record inserted to local db. RowId: $id")
+                            data.let {
+                                //insert data to local DB
+                                val taskList = it.filterIsInstance<TaskEntity>()
+                                val insertResult = taskRepository.insertMany(taskList)
+                                Timber.d("$insertResult")
+
+                            }
+                            /*
+                            get the task from db
+                            */
+                            getTaskFromDb()
                         }
-
-                        /*
-                        get the task from db
-                         */
-                        getTaskFromDb()
-
+                        is ResultSet.Error -> {
+                            if (result.error != null) {
+                                errorMsgString.postValue(result.error.localizedMessage)
+                            } else {
+                                errorMsgInt.postValue(result.errorMsg)
+                            }
+                        }
                     }
 
                     progress.postValue(false)
+
+                } else {
+                    //errorMsgInt.postValue(R.string.error_no_internet_msg)
+                    /*
+                       get the task from db
+                    */
+                    getTaskFromDb()
                 }
-            }
-            else {
-                /*
-                   get the task from db
-                */
-                getTaskFromDb()
 
+            } catch (error: Exception) {
+                Timber.e(error.message.toString())
             }
-
-        } catch (error: Exception) {
-            Log.e(TAG, error.message.toString())
         }
+
+
+
 
     }
 
     /*
     get the task from local db
      */
-    private fun getTaskFromDb(){
+    private suspend fun getTaskFromDb() {
 
-        try {
+        coroutineScope {
+            Timber.d("getTaskFromDb: ${Thread.currentThread().name}")
 
-            CoroutineScope(Dispatchers.IO).launch {
+            when (val result = taskRepository.getAllTaskFromDb()) {
 
-                val data = taskRepository.getAllTaskFromDb()
+                is ResultSet.Success -> {
+                    val data = result.data as List<*>
+                    data.let {
+                        val taskList = it.filterIsInstance<TaskEntity>()
+                        taskListFromDb.postValue(taskList)
+                    }
 
-                taskListFromDb.postValue(data)
+                }
+                is ResultSet.Error -> {
+                    if (result.error != null) {
+                        errorMsgString.postValue(result.error.localizedMessage)
+                    } else {
+                        errorMsgInt.postValue(result.errorMsg)
+                    }
+                }
             }
-
-        }catch (error: Exception){
-            Log.e(TAG, error.message.toString())
         }
-    }
 
+    }
 
 
 }

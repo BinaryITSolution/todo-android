@@ -84,7 +84,10 @@
     <string name="error_code_401">Unauthorized! Please login.</string>
     <string name="error_code_404">The server can not find the requested resource.</string>
     <string name="error_code_500">The server has encountered a situation it doesn\'t know how to handle.</string>
+    <string name="error_code_unknown">Unknown error.</string>
     <string name="lb_note">Note</string>
+
+    <string name="sncakbar_close">Close</string>
 
 
 </resources>

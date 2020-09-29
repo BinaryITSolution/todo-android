@@ -9,6 +9,9 @@ interface TaskDao {
     @Insert
     suspend fun insert(taskEntity: TaskEntity): Long
 
+    @Insert
+    suspend fun insertMany(taskEntity: List<TaskEntity>): List<Long>
+
     @Update
     suspend fun update(taskEntity: TaskEntity): Int
 
@@ -19,5 +22,5 @@ interface TaskDao {
     suspend fun getAllTaskFromDd(): List<TaskEntity>
 
     @Query("SELECT MAX(taskId) FROM task_entity")
-    suspend fun getMaxTaskId(): Int?
+    suspend fun getMaxTaskId(): Int
 }
