@@ -52,6 +52,7 @@ class HomeFragment : Fragment(), TaskCallBack {
         recycleView = binding.taskRecyclerView
         //mTaskAdaptor = TaskAdaptor(listOf())
         //mTaskAdaptorAsyncListDiffer = TaskAdaptorAsyncListDiffer()
+
         mTaskListAdaptor = TaskListAdaptor()
 
         mLayoutManager = LinearLayoutManager(context)
